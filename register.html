@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar - MPLS SMAN 5 TUBAN</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+            padding: 2rem;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        body.dark-mode .auth-card {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-header h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-header p {
+            color: var(--gray-600);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            background: var(--light);
+            color: var(--gray-900);
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-control.error {
+            border-color: var(--danger);
+        }
+
+        .form-control.success {
+            border-color: var(--success);
+        }
+
+        .form-error {
+            color: var(--danger);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .form-error.show {
+            display: block;
+        }
+
+        .form-success {
+            color: var(--success);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .form-success.show {
+            display: block;
+        }
+
+        .password-strength {
+            margin-top: 0.5rem;
+            height: 4px;
+            background: var(--gray-200);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s ease;
+            background: var(--danger);
+        }
+
+        .password-strength-bar.weak {
+            width: 33%;
+            background: var(--danger);
+        }
+
+        .password-strength-bar.medium {
+            width: 66%;
+            background: var(--warning);
+        }
+
+        .password-strength-bar.strong {
+            width: 100%;
+            background: var(--success);
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--gray-600);
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .auth-footer a:hover {
+            color: var(--secondary);
+        }
+
+        .terms {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin-top: 1rem;
+            line-height: 1.6;
+        }
+
+        .terms a {
+            color: var(--primary);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 2rem;
+            }
+
+            .auth-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Daftar Akun</h1>
+                <p>Bergabunglah dengan MPLS SMAN 5 TUBAN</p>
+            </div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="username">Nama Pengguna</label>
+                    <input type="text" id="username" class="form-control" placeholder="Masukkan nama pengguna" required>
+                    <div class="form-error" id="usernameError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-control" placeholder="Masukkan email Anda" required>
+                    <div class="form-error" id="emailError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Masukkan password (min. 6 karakter)" required>
+                    <div class="password-strength">
+                        <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                    </div>
+                    <div class="form-error" id="passwordError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Konfirmasi Password</label>
+                    <input type="password" id="confirmPassword" class="form-control" placeholder="Konfirmasi password Anda" required>
+                    <div class="form-error" id="confirmPasswordError"></div>
+                </div>
+
+                <div class="terms">
+                    <input type="checkbox" id="agreeTerms" required>
+                    <label for="agreeTerms" style="display: inline; margin-left: 0.5rem;">
+                        Saya setuju dengan <a href="#">Syarat & Ketentuan</a> dan <a href="#">Kebijakan Privasi</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-register" id="registerBtn">Daftar</button>
+            </form>
+
+            <div class="auth-footer">
+                Sudah punya akun? <a href="login.html">Masuk di sini</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebaseapp/10.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebaseapp/10.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebaseapp/10.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebaseapp/10.0.0/firebase-storage-compat.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        const registerForm = document.getElementById('registerForm');
+        const usernameInput = document.getElementById('username');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const registerBtn = document.getElementById('registerBtn');
+
+        // Password strength indicator
+        passwordInput.addEventListener('input', () => {
+            const password = passwordInput.value;
+            const strengthBar = document.getElementById('passwordStrengthBar');
+            
+            if (password.length < 6) {
+                strengthBar.className = 'password-strength-bar';
+            } else if (password.length < 10) {
+                strengthBar.className = 'password-strength-bar weak';
+            } else if (password.length < 15) {
+                strengthBar.className = 'password-strength-bar medium';
+            } else {
+                strengthBar.className = 'password-strength-bar strong';
+            }
+        });
+
+        // Real-time validation
+        usernameInput.addEventListener('blur', () => {
+            const username = usernameInput.value;
+            const error = document.getElementById('usernameError');
+            
+            if (!FormValidator.validateUsername(username)) {
+                usernameInput.classList.add('error');
+                error.textContent = 'Nama pengguna harus 3-50 karakter';
+                error.classList.add('show');
+            } else {
+                usernameInput.classList.remove('error');
+                error.classList.remove('show');
+            }
+        });
+
+        emailInput.addEventListener('blur', () => {
+            const email = emailInput.value;
+            const error = document.getElementById('emailError');
+            
+            if (!FormValidator.validateEmail(email)) {
+                emailInput.classList.add('error');
+                error.textContent = 'Email tidak valid';
+                error.classList.add('show');
+            } else {
+                emailInput.classList.remove('error');
+                error.classList.remove('show');
+            }
+        });
+
+        passwordInput.addEventListener('blur', () => {
+            const password = passwordInput.value;
+            const error = document.getElementById('passwordError');
+            
+            if (!FormValidator.validatePassword(password)) {
+                passwordInput.classList.add('error');
+                error.textContent = 'Password minimal 6 karakter';
+                error.classList.add('show');
+            } else {
+                passwordInput.classList.remove('error');
+                error.classList.remove('show');
+            }
+        });
+
+        confirmPasswordInput.addEventListener('blur', () => {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            const error = document.getElementById('confirmPasswordError');
+            
+            if (!FormValidator.validatePasswordMatch(password, confirmPassword)) {
+                confirmPasswordInput.classList.add('error');
+                error.textContent = 'Password tidak cocok';
+                error.classList.add('show');
+            } else {
+                confirmPasswordInput.classList.remove('error');
+                error.classList.remove('show');
+            }
+        });
+
+        // Form submission
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = usernameInput.value;
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            const agreeTerms = document.getElementById('agreeTerms').checked;
+
+            // Validation
+            if (!FormValidator.validateUsername(username)) {
+                toast.error('Nama pengguna tidak valid');
+                return;
+            }
+
+            if (!FormValidator.validateEmail(email)) {
+                toast.error('Email tidak valid');
+                return;
+            }
+
+            if (!FormValidator.validatePassword(password)) {
+                toast.error('Password minimal 6 karakter');
+                return;
+            }
+
+            if (!FormValidator.validatePasswordMatch(password, confirmPassword)) {
+                toast.error('Password tidak cocok');
+                return;
+            }
+
+            if (!agreeTerms) {
+                toast.error('Anda harus menyetujui syarat dan ketentuan');
+                return;
+            }
+
+            // Register
+            try {
+                loading.show();
+                registerBtn.disabled = true;
+                registerBtn.innerHTML = '<span class="loading-spinner"></span>Mendaftar...';
+
+                const user = await registerUser(email, password, username);
+
+                // Generate and save OTP
+                const otp = await generateOTP();
+                await saveOTP(email, otp);
+
+                // In production, send OTP via email
+                console.log('OTP untuk testing:', otp);
+                
+                toast.success('Pendaftaran berhasil! Silakan verifikasi email Anda.');
+                
+                // Redirect to verify page
+                setTimeout(() => {
+                    window.location.href = `verify.html?email=${encodeURIComponent(email)}`;
+                }, 2000);
+
+            } catch (error) {
+                loading.hide();
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = 'Daftar';
+
+                let errorMessage = 'Terjadi kesalahan saat mendaftar';
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'Email sudah terdaftar';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'Password terlalu lemah';
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                
+                toast.error(errorMessage);
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            themeToggle.updateIcon();
+        });
+    </script>
+</body>
+</html>

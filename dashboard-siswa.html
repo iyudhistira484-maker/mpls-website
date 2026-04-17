@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Siswa - MPLS SMAN 5 TUBAN</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            animation: slideInDown 0.6s ease-out;
+        }
+
+        .dashboard-title h1 {
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-title p {
+            color: var(--gray-600);
+        }
+
+        .user-menu {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .progress-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        body.dark-mode .progress-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        body.dark-mode .progress-bar {
+            background: var(--gray-300);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            width: 65%;
+            transition: width 0.5s ease;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--transition);
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        body.dark-mode .stat-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .schedule-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        body.dark-mode .schedule-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .schedule-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .schedule-time {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .schedule-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .schedule-location {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        .material-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .material-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: var(--transition);
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        body.dark-mode .material-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .material-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .material-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .material-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .material-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .material-status.read {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .material-status.unread {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+        .announcement-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .announcement-item {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border-left: 4px solid var(--warning);
+            transition: var(--transition);
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        body.dark-mode .announcement-item {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .announcement-item:hover {
+            transform: translateX(4px);
+        }
+
+        .announcement-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .announcement-date {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .leaderboard-item {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        body.dark-mode .leaderboard-item {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .leaderboard-rank {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .leaderboard-rank.top1 {
+            color: #FFD700;
+        }
+
+        .leaderboard-rank.top2 {
+            color: #C0C0C0;
+        }
+
+        .leaderboard-rank.top3 {
+            color: #CD7F32;
+        }
+
+        .leaderboard-info {
+            flex: 1;
+        }
+
+        .leaderboard-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .leaderboard-class {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        .leaderboard-points {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-600);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .schedule-grid,
+            .material-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">MPLS</div>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+                <a href="#dashboard" class="sidebar-menu-link active" onclick="showSection('dashboard')">
+                    <span class="sidebar-menu-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#jadwal" class="sidebar-menu-link" onclick="showSection('jadwal')">
+                    <span class="sidebar-menu-icon">📅</span>
+                    <span>Jadwal</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#materi" class="sidebar-menu-link" onclick="showSection('materi')">
+                    <span class="sidebar-menu-icon">📚</span>
+                    <span>Materi</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#tugas" class="sidebar-menu-link" onclick="showSection('tugas')">
+                    <span class="sidebar-menu-icon">✏️</span>
+                    <span>Tugas</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#absensi" class="sidebar-menu-link" onclick="showSection('absensi')">
+                    <span class="sidebar-menu-icon">✅</span>
+                    <span>Absensi</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#quiz" class="sidebar-menu-link" onclick="showSection('quiz')">
+                    <span class="sidebar-menu-icon">❓</span>
+                    <span>Quiz</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#leaderboard" class="sidebar-menu-link" onclick="showSection('leaderboard')">
+                    <span class="sidebar-menu-icon">🏆</span>
+                    <span>Leaderboard</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#pengumuman" class="sidebar-menu-link" onclick="showSection('pengumuman')">
+                    <span class="sidebar-menu-icon">📢</span>
+                    <span>Pengumuman</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#galeri" class="sidebar-menu-link" onclick="showSection('galeri')">
+                    <span class="sidebar-menu-icon">📸</span>
+                    <span>Galeri</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#profil" class="sidebar-menu-link" onclick="showSection('profil')">
+                    <span class="sidebar-menu-icon">👤</span>
+                    <span>Profil</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Navbar -->
+        <nav class="navbar" style="margin: -2rem -2rem 2rem -2rem; padding: 1rem 2rem;">
+            <div class="navbar-container">
+                <div></div>
+                <div class="navbar-actions">
+                    <button class="theme-toggle">🌙</button>
+                    <button class="btn btn-sm btn-ghost" onclick="logoutUser()">Logout</button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="section-content">
+                <div class="dashboard-header">
+                    <div class="dashboard-title">
+                        <h1>Selamat Datang, <span id="userName">Siswa</span>! 👋</h1>
+                        <p>Pantau progress MPLS Anda di sini</p>
+                    </div>
+                    <div class="user-menu">
+                        <div class="user-avatar" id="userAvatar">S</div>
+                    </div>
+                </div>
+
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <div>
+                            <h3>Progress MPLS</h3>
+                            <p style="color: var(--gray-600); font-size: 0.9rem;">Selesaikan semua kegiatan untuk mendapat sertifikat</p>
+                        </div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">65%</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-value" id="materiCount">12</div>
+                        <div class="stat-label">Materi Dibaca</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value" id="tugasCount">8</div>
+                        <div class="stat-label">Tugas Selesai</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">❓</div>
+                        <div class="stat-value" id="quizCount">5</div>
+                        <div class="stat-label">Quiz Dikerjakan</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-value" id="pointsCount">850</div>
+                        <div class="stat-label">Poin Dikumpulkan</div>
+                    </div>
+                </div>
+
+                <h2 class="section-title">Jadwal Hari Ini</h2>
+                <div class="schedule-grid" id="todaySchedule">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <p>Tidak ada jadwal untuk hari ini</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Jadwal Section -->
+            <section id="jadwal-section" class="section-content hidden">
+                <h1>Jadwal Kegiatan</h1>
+                <div class="schedule-grid" id="scheduleList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📅</div>
+                        <p>Memuat jadwal...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Materi Section -->
+            <section id="materi-section" class="section-content hidden">
+                <h1>Materi Pembelajaran</h1>
+                <div class="material-grid" id="materiList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📚</div>
+                        <p>Memuat materi...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tugas Section -->
+            <section id="tugas-section" class="section-content hidden">
+                <h1>Tugas</h1>
+                <div class="announcement-list" id="tugasList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✏️</div>
+                        <p>Memuat tugas...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Absensi Section -->
+            <section id="absensi-section" class="section-content hidden">
+                <h1>Absensi</h1>
+                <div class="card" style="margin-bottom: 2rem;">
+                    <button class="btn btn-primary" onclick="submitAbsensi()">Absen Hari Ini</button>
+                </div>
+                <div id="absensiList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✅</div>
+                        <p>Memuat data absensi...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quiz Section -->
+            <section id="quiz-section" class="section-content hidden">
+                <h1>Quiz</h1>
+                <div class="announcement-list" id="quizList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">❓</div>
+                        <p>Memuat quiz...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Leaderboard Section -->
+            <section id="leaderboard-section" class="section-content hidden">
+                <h1>Leaderboard</h1>
+                <div class="leaderboard-list" id="leaderboardList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🏆</div>
+                        <p>Memuat leaderboard...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pengumuman Section -->
+            <section id="pengumuman-section" class="section-content hidden">
+                <h1>Pengumuman</h1>
+                <div class="announcement-list" id="pengumumanList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📢</div>
+                        <p>Memuat pengumuman...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Galeri Section -->
+            <section id="galeri-section" class="section-content hidden">
+                <h1>Galeri Kegiatan</h1>
+                <div class="grid grid-3" id="galeriList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📸</div>
+                        <p>Memuat galeri...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Profil Section -->
+            <section id="profil-section" class="section-content hidden">
+                <h1>Profil Saya</h1>
+                <div class="card">
+                    <div class="card-body">
+                        <form id="profileForm">
+                            <div class="form-group">
+                                <label>Nama Pengguna</label>
+                                <input type="text" class="form-control" id="profileUsername" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" class="form-control" id="profileEmail" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Nomor Induk Siswa</label>
+                                <input type="text" class="form-control" id="profileStudentId" placeholder="Masukkan NIS">
+                            </div>
+                            <div class="form-group">
+                                <label>Kelas</label>
+                                <input type="text" class="form-control" id="profileClass" placeholder="Masukkan kelas">
+                            </div>
+                            <div class="form-group">
+                                <label>Nomor Telepon</label>
+                                <input type="tel" class="form-control" id="profilePhone" placeholder="Masukkan nomor telepon">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebaseapp/10.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebaseapp/10.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebaseapp/10.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebaseapp/10.0.0/firebase-storage-compat.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        let currentUser = null;
+        let currentUserData = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await requireAuth();
+            themeToggle.updateIcon();
+            
+            currentUser = await getCurrentUser();
+            if (currentUser) {
+                currentUserData = await getUserData(currentUser.uid);
+                
+                // Set user info
+                document.getElementById('userName').textContent = currentUserData.username;
+                document.getElementById('userAvatar').textContent = currentUserData.username.charAt(0).toUpperCase();
+                
+                // Load profile data
+                document.getElementById('profileUsername').value = currentUserData.username;
+                document.getElementById('profileEmail').value = currentUserData.email;
+                document.getElementById('profileStudentId').value = currentUserData.studentId || '';
+                document.getElementById('profileClass').value = currentUserData.class || '';
+                document.getElementById('profilePhone').value = currentUserData.phone || '';
+                
+                // Load data
+                loadSchedules();
+                loadMaterials();
+                loadTasks();
+                loadQuiz();
+                loadAnnouncements();
+                loadLeaderboard();
+                loadGallery();
+            }
+        });
+
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+
+            // Update active menu
+            document.querySelectorAll('.sidebar-menu-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.closest('.sidebar-menu-link').classList.add('active');
+        }
+
+        async function loadSchedules() {
+            try {
+                const snapshot = await db.collection('schedules').orderBy('date').get();
+                const scheduleList = document.getElementById('scheduleList');
+                
+                if (snapshot.empty) {
+                    scheduleList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📅</div><p>Belum ada jadwal</p></div>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    html += `
+                        <div class="schedule-card">
+                            <div class="schedule-time">${data.time}</div>
+                            <div class="schedule-title">${data.title}</div>
+                            <div class="schedule-location">📍 ${data.location}</div>
+                        </div>
+                    `;
+                });
+                scheduleList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading schedules:', error);
+            }
+        }
+
+        async function loadMaterials() {
+            try {
+                const snapshot = await db.collection('materials').get();
+                const materiList = document.getElementById('materiList');
+                
+                if (snapshot.empty) {
+                    materiList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📚</div><p>Belum ada materi</p></div>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const isRead = Math.random() > 0.5;
+                    html += `
+                        <div class="material-card">
+                            <div class="material-icon">📄</div>
+                            <div class="material-title">${data.title}</div>
+                            <p style="color: var(--gray-600); font-size: 0.9rem; margin: 0.5rem 0;">${data.description}</p>
+                            <span class="material-status ${isRead ? 'read' : 'unread'}">
+                                ${isRead ? '✓ Sudah Dibaca' : '○ Belum Dibaca'}
+                            </span>
+                        </div>
+                    `;
+                });
+                materiList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading materials:', error);
+            }
+        }
+
+        async function loadTasks() {
+            try {
+                const snapshot = await db.collection('submissions').where('studentId', '==', currentUser.uid).get();
+                const tugasList = document.getElementById('tugasList');
+                
+                if (snapshot.empty) {
+                    tugasList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✏️</div><p>Belum ada tugas</p></div>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    html += `
+                        <div class="announcement-item">
+                            <div class="announcement-title">${data.title}</div>
+                            <p style="color: var(--gray-600); font-size: 0.9rem; margin: 0.5rem 0;">${data.description}</p>
+                            <div class="announcement-date">Deadline: ${DateUtils.formatDate(data.deadline)}</div>
+                        </div>
+                    `;
+                });
+                tugasList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+            }
+        }
+
+        async function loadQuiz() {
+            try {
+                const snapshot = await db.collection('quiz').get();
+                const quizList = document.getElementById('quizList');
+                
+                if (snapshot.empty) {
+                    quizList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">❓</div><p>Belum ada quiz</p></div>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    html += `
+                        <div class="announcement-item">
+                            <div class="announcement-title">${data.title}</div>
+                            <p style="color: var(--gray-600); font-size: 0.9rem; margin: 0.5rem 0;">${data.description}</p>
+                            <button class="btn btn-sm btn-primary" onclick="startQuiz('${doc.id}')">Mulai Quiz</button>
+                        </div>
+                    `;
+                });
+                quizList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading quiz:', error);
+            }
+        }
+
+        async function loadAnnouncements() {
+            try {
+                const snapshot = await db.collection('announcements').orderBy('createdAt', 'desc').get();
+                const pengumumanList = document.getElementById('pengumumanList');
+                
+                if (snapshot.empty) {
+                    pengumumanList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📢</div><p>Belum ada pengumuman</p></div>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    html += `
+                        <div class="announcement-item">
+                            <div class="announcement-title">${data.title}</div>
+                            <p style="color: var(--gray-600); font-size: 0.9rem; margin: 0.5rem 0;">${data.content}</p>
+                            <div class="announcement-date">${DateUtils.formatDate(data.createdAt)}</div>
+                        </div>
+                    `;
+                });
+                pengumumanList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading announcements:', error);
+            }
+        }
+
+        async function loadLeaderboard() {
+            try {
+                const snapshot = await db.collection('users').where('role', '==', 'siswa').orderBy('points', 'desc').limit(10).get();
+                const leaderboardList = document.getElementById('leaderboardList');
+                
+                if (snapshot.empty) {
+                    leaderboardList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏆</div><p>Belum ada data leaderboard</p></div>';
+                    return;
+                }
+
+                let html = '';
+                let rank = 1;
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    let rankClass = '';
+                    if (rank === 1) rankClass = 'top1';
+                    else if (rank === 2) rankClass = 'top2';
+                    else if (rank === 3) rankClass = 'top3';
+                    
+                    html += `
+                        <div class="leaderboard-item">
+                            <div class="leaderboard-rank ${rankClass}">${rank}</div>
+                            <div class="leaderboard-info">
+                                <div class="leaderboard-name">${data.username}</div>
+                                <div class="leaderboard-class">${data.class || 'Kelas -'}</div>
+                            </div>
+                            <div class="leaderboard-points">${data.points || 0} poin</div>
+                        </div>
+                    `;
+                    rank++;
+                });
+                leaderboardList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+            }
+        }
+
+        async function loadGallery() {
+            try {
+                const snapshot = await db.collection('gallery').orderBy('createdAt', 'desc').get();
+                const galeriList = document.getElementById('galeriList');
+                
+                if (snapshot.empty) {
+                    galeriList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📸</div><p>Belum ada foto di galeri</p></div>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    html += `
+                        <div class="card" style="overflow: hidden; cursor: pointer;">
+                            <img src="${data.imageUrl}" alt="${data.title}" style="width: 100%; height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h3 style="margin: 0 0 0.5rem 0;">${data.title}</h3>
+                                <p style="color: var(--gray-600); font-size: 0.9rem; margin: 0;">${data.description}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                galeriList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading gallery:', error);
+            }
+        }
+
+        async function submitAbsensi() {
+            try {
+                loading.show();
+                
+                // Check if already absent today
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const snapshot = await db.collection('attendance')
+                    .where('studentId', '==', currentUser.uid)
+                    .where('date', '>=', today)
+                    .get();
+                
+                if (!snapshot.empty) {
+                    toast.warning('Anda sudah absen hari ini');
+                    loading.hide();
+                    return;
+                }
+
+                // Add attendance
+                await db.collection('attendance').add({
+                    studentId: currentUser.uid,
+                    studentName: currentUserData.username,
+                    date: new Date(),
+                    time: DateUtils.formatTime(new Date()),
+                    createdAt: new Date()
+                });
+
+                toast.success('Absensi berhasil dicatat');
+                loading.hide();
+            } catch (error) {
+                loading.hide();
+                toast.error('Gagal mencatat absensi');
+            }
+        }
+
+        function startQuiz(quizId) {
+            toast.info('Fitur quiz akan segera tersedia');
+        }
+
+        async function logoutUser() {
+            try {
+                await auth.signOut();
+                sessionStorage.clear();
+                window.location.href = 'login.html';
+            } catch (error) {
+                toast.error('Gagal logout');
+            }
+        }
+
+        // Profile form submission
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                loading.show();
+                
+                await db.collection('users').doc(currentUser.uid).update({
+                    studentId: document.getElementById('profileStudentId').value,
+                    class: document.getElementById('profileClass').value,
+                    phone: document.getElementById('profilePhone').value
+                });
+
+                toast.success('Profil berhasil diperbarui');
+                loading.hide();
+            } catch (error) {
+                loading.hide();
+                toast.error('Gagal memperbarui profil');
+            }
+        });
+    </script>
+</body>
+</html>

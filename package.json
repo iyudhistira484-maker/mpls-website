@@ -1,0 +1,27 @@
+{
+  "name": "mpls-sman5-tuban",
+  "version": "1.0.0",
+  "description": "Website Platform Masa Pengenalan Lingkungan Sekolah SMAN 5 TUBAN",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 8000"
+  },
+  "keywords": [
+    "mpls",
+    "sman5",
+    "tuban",
+    "school",
+    "firebase"
+  ],
+  "author": "MPLS Team",
+  "license": "MIT",
+  "dependencies": {
+    "firebase": "^10.0.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": ""
+  }
+}

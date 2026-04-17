@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi OTP - MPLS SMAN 5 TUBAN</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+            padding: 2rem;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        body.dark-mode .auth-card {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-header h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-header p {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+        }
+
+        .otp-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .otp-inputs {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border: 2px solid var(--gray-200);
+            border-radius: 0.75rem;
+            background: var(--light);
+            color: var(--gray-900);
+            transition: all 0.3s ease;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .otp-input.error {
+            border-color: var(--danger);
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .timer {
+            text-align: center;
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .timer.warning {
+            color: var(--warning);
+        }
+
+        .timer.expired {
+            color: var(--danger);
+        }
+
+        .timer strong {
+            font-weight: 700;
+        }
+
+        .btn-verify {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--gray-600);
+            font-size: 0.95rem;
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .auth-footer a:hover {
+            color: var(--secondary);
+        }
+
+        .resend-section {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        body.dark-mode .resend-section {
+            border-top-color: var(--gray-300);
+        }
+
+        .resend-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .resend-btn:hover:not(:disabled) {
+            color: var(--secondary);
+        }
+
+        .resend-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        .info-box {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 2rem;
+            }
+
+            .auth-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .otp-inputs {
+                gap: 0.5rem;
+            }
+
+            .otp-input {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="otp-icon">📧</div>
+                <h1>Verifikasi Email</h1>
+                <p>Masukkan kode OTP 6 digit yang telah kami kirim ke email Anda</p>
+            </div>
+
+            <div class="info-box">
+                Email: <strong id="emailDisplay">-</strong>
+            </div>
+
+            <div class="timer" id="timerDisplay">
+                Kode berlaku selama: <strong id="timerValue">5:00</strong>
+            </div>
+
+            <div class="otp-inputs" id="otpInputs">
+                <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+                <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+            </div>
+
+            <button type="button" class="btn btn-primary btn-verify" id="verifyBtn">Verifikasi</button>
+
+            <div class="resend-section">
+                <p style="margin-bottom: 1rem;">Tidak menerima kode?</p>
+                <button type="button" class="resend-btn" id="resendBtn">Kirim Ulang</button>
+                <p style="font-size: 0.8rem; margin-top: 0.5rem; color: var(--gray-400);">Tunggu <strong id="resendTimer">60</strong>s</p>
+            </div>
+
+            <div class="auth-footer">
+                <a href="login.html">Kembali ke halaman login</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebaseapp/10.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebaseapp/10.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebaseapp/10.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebaseapp/10.0.0/firebase-storage-compat.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const email = urlParams.get('email');
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const resendBtn = document.getElementById('resendBtn');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const timerValue = document.getElementById('timerValue');
+        const resendTimer = document.getElementById('resendTimer');
+        const emailDisplay = document.getElementById('emailDisplay');
+
+        let timeLeft = 300; // 5 minutes
+        let resendTimeLeft = 0;
+
+        // Set email display
+        if (email) {
+            emailDisplay.textContent = email;
+        }
+
+        // Timer countdown
+        function startTimer() {
+            timeLeft = 300;
+            const timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerValue.textContent = `${minutes}:${String(seconds).padStart(2, '0')}`;
+
+                if (timeLeft <= 60) {
+                    timerDisplay.classList.add('warning');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerDisplay.classList.remove('warning');
+                    timerDisplay.classList.add('expired');
+                    timerValue.textContent = 'Kadaluarsa';
+                    verifyBtn.disabled = true;
+                }
+            }, 1000);
+        }
+
+        // Resend timer
+        function startResendTimer() {
+            resendTimeLeft = 60;
+            resendBtn.disabled = true;
+            const resendInterval = setInterval(() => {
+                resendTimeLeft--;
+                resendTimer.textContent = resendTimeLeft;
+
+                if (resendTimeLeft <= 0) {
+                    clearInterval(resendInterval);
+                    resendBtn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        // OTP input handling
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1) {
+                    if (index < otpInputs.length - 1) {
+                        otpInputs[index + 1].focus();
+                    }
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !input.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData('text');
+                const digits = pastedData.replace(/\D/g, '').slice(0, 6);
+                
+                digits.split('').forEach((digit, i) => {
+                    if (i < otpInputs.length) {
+                        otpInputs[i].value = digit;
+                    }
+                });
+            });
+        });
+
+        // Verify OTP
+        verifyBtn.addEventListener('click', async () => {
+            const otp = Array.from(otpInputs).map(input => input.value).join('');
+
+            if (!FormValidator.validateOTP(otp)) {
+                toast.error('Masukkan OTP 6 digit yang valid');
+                otpInputs.forEach(input => input.classList.add('error'));
+                setTimeout(() => {
+                    otpInputs.forEach(input => input.classList.remove('error'));
+                }, 400);
+                return;
+            }
+
+            try {
+                loading.show();
+                verifyBtn.disabled = true;
+                verifyBtn.innerHTML = '<span class="loading-spinner"></span>Memverifikasi...';
+
+                await verifyOTP(email, otp);
+
+                toast.success('Email berhasil diverifikasi!');
+
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+
+            } catch (error) {
+                loading.hide();
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = 'Verifikasi';
+
+                otpInputs.forEach(input => input.classList.add('error'));
+                setTimeout(() => {
+                    otpInputs.forEach(input => input.classList.remove('error'));
+                }, 400);
+
+                toast.error(error.message || 'Verifikasi gagal');
+            }
+        });
+
+        // Resend OTP
+        resendBtn.addEventListener('click', async () => {
+            try {
+                const otp = await generateOTP();
+                await saveOTP(email, otp);
+
+                // Reset OTP inputs
+                otpInputs.forEach(input => {
+                    input.value = '';
+                    input.classList.remove('error');
+                });
+                otpInputs[0].focus();
+
+                // Reset timer
+                timerDisplay.classList.remove('expired');
+                startTimer();
+
+                // Start resend timer
+                startResendTimer();
+
+                toast.success('OTP baru telah dikirim ke email Anda');
+                console.log('OTP untuk testing:', otp);
+
+            } catch (error) {
+                toast.error('Gagal mengirim ulang OTP');
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            themeToggle.updateIcon();
+            startTimer();
+            startResendTimer();
+            otpInputs[0].focus();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - MPLS SMAN 5 TUBAN</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            animation: slideInDown 0.6s ease-out;
+        }
+
+        .admin-title h1 {
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-title p {
+            color: var(--gray-600);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        body.dark-mode .table-responsive {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-900);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        body.dark-mode th {
+            border-bottom-color: var(--gray-300);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            color: var(--gray-600);
+        }
+
+        body.dark-mode td {
+            border-bottom-color: var(--gray-300);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-edit {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-edit:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .btn-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--gray-300);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.15);
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        body.dark-mode .stat-card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            margin: 0;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 1rem;
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-item-actions {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-item-actions {
+            opacity: 1;
+        }
+
+        .modal-content {
+            max-width: 600px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-600);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .admin-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .table-responsive {
+                font-size: 0.875rem;
+            }
+
+            th, td {
+                padding: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">MPLS Admin</div>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+                <a href="#dashboard" class="sidebar-menu-link active" onclick="showAdminSection('dashboard')">
+                    <span class="sidebar-menu-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#users" class="sidebar-menu-link" onclick="showAdminSection('users')">
+                    <span class="sidebar-menu-icon">👥</span>
+                    <span>Kelola User</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#schedules" class="sidebar-menu-link" onclick="showAdminSection('schedules')">
+                    <span class="sidebar-menu-icon">📅</span>
+                    <span>Jadwal</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#materials" class="sidebar-menu-link" onclick="showAdminSection('materials')">
+                    <span class="sidebar-menu-icon">📚</span>
+                    <span>Materi</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#tasks" class="sidebar-menu-link" onclick="showAdminSection('tasks')">
+                    <span class="sidebar-menu-icon">✏️</span>
+                    <span>Tugas</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#announcements" class="sidebar-menu-link" onclick="showAdminSection('announcements')">
+                    <span class="sidebar-menu-icon">📢</span>
+                    <span>Pengumuman</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#gallery" class="sidebar-menu-link" onclick="showAdminSection('gallery')">
+                    <span class="sidebar-menu-icon">📸</span>
+                    <span>Galeri Kegiatan</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Navbar -->
+        <nav class="navbar" style="margin: -2rem -2rem 2rem -2rem; padding: 1rem 2rem;">
+            <div class="navbar-container">
+                <div></div>
+                <div class="navbar-actions">
+                    <button class="theme-toggle">🌙</button>
+                    <button class="btn btn-sm btn-ghost" onclick="logoutAdmin()">Logout</button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="section-content">
+                <div class="admin-header">
+                    <div class="admin-title">
+                        <h1>Dashboard Admin 🎯</h1>
+                        <p>Kelola semua aspek MPLS SMAN 5 TUBAN</p>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-value" id="totalUsers">0</div>
+                        <div class="stat-label">Total Siswa</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value" id="verifiedUsers">0</div>
+                        <div class="stat-label">Terverifikasi</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-value" id="totalMaterials">0</div>
+                        <div class="stat-label">Total Materi</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📸</div>
+                        <div class="stat-value" id="totalGallery">0</div>
+                        <div class="stat-label">Foto Galeri</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Users Management Section -->
+            <section id="users-section" class="section-content hidden">
+                <div class="section-header">
+                    <h2>Kelola User</h2>
+                    <button class="btn btn-primary" onclick="openAddUserModal()">+ Tambah User</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nama</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersList">
+                            <tr>
+                                <td colspan="5" style="text-align: center;">Memuat data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Schedules Section -->
+            <section id="schedules-section" class="section-content hidden">
+                <div class="section-header">
+                    <h2>Jadwal Kegiatan</h2>
+                    <button class="btn btn-primary" onclick="openAddScheduleModal()">+ Tambah Jadwal</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Judul</th>
+                                <th>Tanggal</th>
+                                <th>Waktu</th>
+                                <th>Lokasi</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schedulesList">
+                            <tr>
+                                <td colspan="5" style="text-align: center;">Memuat data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Materials Section -->
+            <section id="materials-section" class="section-content hidden">
+                <div class="section-header">
+                    <h2>Materi Pembelajaran</h2>
+                    <button class="btn btn-primary" onclick="openAddMaterialModal()">+ Tambah Materi</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Judul</th>
+                                <th>Deskripsi</th>
+                                <th>Dibuat</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="materialsList">
+                            <tr>
+                                <td colspan="4" style="text-align: center;">Memuat data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Tasks Section -->
+            <section id="tasks-section" class="section-content hidden">
+                <div class="section-header">
+                    <h2>Tugas</h2>
+                    <button class="btn btn-primary" onclick="openAddTaskModal()">+ Tambah Tugas</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Judul</th>
+                                <th>Deskripsi</th>
+                                <th>Deadline</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasksList">
+                            <tr>
+                                <td colspan="4" style="text-align: center;">Memuat data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Announcements Section -->
+            <section id="announcements-section" class="section-content hidden">
+                <div class="section-header">
+                    <h2>Pengumuman</h2>
+                    <button class="btn btn-primary" onclick="openAddAnnouncementModal()">+ Tambah Pengumuman</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Judul</th>
+                                <th>Konten</th>
+                                <th>Dibuat</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="announcementsList">
+                            <tr>
+                                <td colspan="4" style="text-align: center;">Memuat data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Gallery Section -->
+            <section id="gallery-section" class="section-content hidden">
+                <div class="section-header">
+                    <h2>Galeri Kegiatan</h2>
+                    <button class="btn btn-primary" onclick="openAddGalleryModal()">+ Upload Foto</button>
+                </div>
+
+                <div class="gallery-grid" id="galleryList">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📸</div>
+                        <p>Belum ada foto di galeri</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Add Gallery Modal -->
+    <div id="addGalleryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Upload Foto Galeri</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addGalleryForm">
+                    <div class="form-group">
+                        <label>Judul</label>
+                        <input type="text" class="form-control" id="galleryTitle" placeholder="Masukkan judul foto" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Deskripsi</label>
+                        <textarea class="form-control" id="galleryDescription" placeholder="Masukkan deskripsi foto" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Foto</label>
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-icon">📸</div>
+                            <p>Drag & drop foto di sini atau klik untuk memilih</p>
+                            <input type="file" id="galleryFile" accept="image/*" style="display: none;" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebaseapp/10.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebaseapp/10.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebaseapp/10.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebaseapp/10.0.0/firebase-storage-compat.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        let currentAdmin = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await requireAuth();
+            themeToggle.updateIcon();
+            
+            currentAdmin = await getCurrentUser();
+            if (currentAdmin) {
+                const adminData = await getUserData(currentAdmin.uid);
+                if (adminData.role !== 'admin') {
+                    window.location.href = 'dashboard-siswa.html';
+                    return;
+                }
+                
+                loadDashboardStats();
+                loadUsers();
+                loadSchedules();
+                loadMaterials();
+                loadTasks();
+                loadAnnouncements();
+                loadGallery();
+                setupGalleryUpload();
+            }
+        });
+
+        function showAdminSection(sectionName) {
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+
+            document.querySelectorAll('.sidebar-menu-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.closest('.sidebar-menu-link').classList.add('active');
+        }
+
+        async function loadDashboardStats() {
+            try {
+                const usersSnapshot = await db.collection('users').get();
+                const materialsSnapshot = await db.collection('materials').get();
+                const gallerySnapshot = await db.collection('gallery').get();
+
+                let verifiedCount = 0;
+                usersSnapshot.forEach(doc => {
+                    if (doc.data().isVerified) verifiedCount++;
+                });
+
+                document.getElementById('totalUsers').textContent = usersSnapshot.size;
+                document.getElementById('verifiedUsers').textContent = verifiedCount;
+                document.getElementById('totalMaterials').textContent = materialsSnapshot.size;
+                document.getElementById('totalGallery').textContent = gallerySnapshot.size;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadUsers() {
+            try {
+                const snapshot = await db.collection('users').get();
+                const usersList = document.getElementById('usersList');
+                
+                if (snapshot.empty) {
+                    usersList.innerHTML = '<tr><td colspan="5" style="text-align: center;">Tidak ada user</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    html += `
+                        <tr>
+                            <td>${data.username}</td>
+                            <td>${data.email}</td>
+                            <td><span class="badge" style="background: ${data.role === 'admin' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(168, 85, 247, 0.1)'}; color: ${data.role === 'admin' ? 'var(--primary)' : 'var(--secondary)'}; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600;">${data.role}</span></td>
+                            <td><span class="badge" style="background: ${data.isVerified ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; color: ${data.isVerified ? 'var(--success)' : 'var(--danger)'}; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600;">${data.isVerified ? 'Terverifikasi' : 'Belum'}</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-sm btn-edit" onclick="editUser('${doc.id}')">Edit</button>
+                                    <button class="btn btn-sm btn-delete" onclick="deleteUser('${doc.id}')">Hapus</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                usersList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        async function loadSchedules() {
+            try {
+                const snapshot = await db.collection('schedules').orderBy('date').get();
+                const schedulesList = document.getElementById('schedulesList');
+                
+                if (snapshot.empty) {
+                    schedulesList.innerHTML = '<tr><td colspan="5" style="text-align: center;">Tidak ada jadwal</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    html += `
+                        <tr>
+                            <td>${data.title}</td>
+                            <td>${DateUtils.formatDate(data.date)}</td>
+                            <td>${data.time}</td>
+                            <td>${data.location}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-sm btn-edit" onclick="editSchedule('${doc.id}')">Edit</button>
+                                    <button class="btn btn-sm btn-delete" onclick="deleteSchedule('${doc.id}')">Hapus</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                schedulesList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading schedules:', error);
+            }
+        }
+
+        async function loadMaterials() {
+            try {
+                const snapshot = await db.collection('materials').get();
+                const materialsList = document.getElementById('materialsList');
+                
+                if (snapshot.empty) {
+                    materialsList.innerHTML = '<tr><td colspan="4" style="text-align: center;">Tidak ada materi</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    html += `
+                        <tr>
+                            <td>${data.title}</td>
+                            <td>${StringUtils.truncate(data.description, 50)}</td>
+                            <td>${DateUtils.formatDate(data.createdAt)}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-sm btn-edit" onclick="editMaterial('${doc.id}')">Edit</button>
+                                    <button class="btn btn-sm btn-delete" onclick="deleteMaterial('${doc.id}')">Hapus</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                materialsList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading materials:', error);
+            }
+        }
+
+        async function loadTasks() {
+            try {
+                const snapshot = await db.collection('submissions').get();
+                const tasksList = document.getElementById('tasksList');
+                
+                if (snapshot.empty) {
+                    tasksList.innerHTML = '<tr><td colspan="4" style="text-align: center;">Tidak ada tugas</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    html += `
+                        <tr>
+                            <td>${data.title}</td>
+                            <td>${StringUtils.truncate(data.description, 50)}</td>
+                            <td>${DateUtils.formatDate(data.deadline)}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-sm btn-edit" onclick="editTask('${doc.id}')">Edit</button>
+                                    <button class="btn btn-sm btn-delete" onclick="deleteTask('${doc.id}')">Hapus</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tasksList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+            }
+        }
+
+        async function loadAnnouncements() {
+            try {
+                const snapshot = await db.collection('announcements').orderBy('createdAt', 'desc').get();
+                const announcementsList = document.getElementById('announcementsList');
+                
+                if (snapshot.empty) {
+                    announcementsList.innerHTML = '<tr><td colspan="4" style="text-align: center;">Tidak ada pengumuman</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    html += `
+                        <tr>
+                            <td>${data.title}</td>
+                            <td>${StringUtils.truncate(data.content, 50)}</td>
+                            <td>${DateUtils.formatDate(data.createdAt)}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-sm btn-edit" onclick="editAnnouncement('${doc.id}')">Edit</button>
+                                    <button class="btn btn-sm btn-delete" onclick="deleteAnnouncement('${doc.id}')">Hapus</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                announcementsList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading announcements:', error);
+            }
+        }
+
+        async function loadGallery() {
+            try {
+                const snapshot = await db.collection('gallery').orderBy('createdAt', 'desc').get();
+                const galleryList = document.getElementById('galleryList');
+                
+                if (snapshot.empty) {
+                    galleryList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📸</div><p>Belum ada foto di galeri</p></div>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    html += `
+                        <div class="gallery-item">
+                            <img src="${data.imageUrl}" alt="${data.title}">
+                            <div class="gallery-item-actions">
+                                <button class="btn btn-sm btn-delete" onclick="deleteGallery('${doc.id}')">Hapus</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                galleryList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading gallery:', error);
+            }
+        }
+
+        function setupGalleryUpload() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('galleryFile');
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                fileInput.files = e.dataTransfer.files;
+            });
+        }
+
+        function openAddGalleryModal() {
+            new Modal('addGalleryModal').open();
+        }
+
+        document.getElementById('addGalleryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('galleryTitle').value;
+            const description = document.getElementById('galleryDescription').value;
+            const file = document.getElementById('galleryFile').files[0];
+
+            if (!file) {
+                toast.error('Pilih foto terlebih dahulu');
+                return;
+            }
+
+            try {
+                loading.show();
+
+                const imageUrl = await uploadFile(file, `gallery/${StringUtils.generateId()}_${file.name}`);
+
+                await db.collection('gallery').add({
+                    title: title,
+                    description: description,
+                    imageUrl: imageUrl,
+                    createdAt: new Date(),
+                    uploadedBy: currentAdmin.uid
+                });
+
+                toast.success('Foto berhasil diupload');
+                new Modal('addGalleryModal').close();
+                document.getElementById('addGalleryForm').reset();
+                loadGallery();
+                loadDashboardStats();
+
+            } catch (error) {
+                toast.error('Gagal mengupload foto');
+            } finally {
+                loading.hide();
+            }
+        });
+
+        async function deleteGallery(id) {
+            if (!confirm('Apakah Anda yakin ingin menghapus foto ini?')) return;
+
+            try {
+                loading.show();
+                const doc = await db.collection('gallery').doc(id).get();
+                if (doc.exists) {
+                    await deleteFile(doc.data().imageUrl);
+                }
+                await db.collection('gallery').doc(id).delete();
+                toast.success('Foto berhasil dihapus');
+                loadGallery();
+                loadDashboardStats();
+            } catch (error) {
+                toast.error('Gagal menghapus foto');
+            } finally {
+                loading.hide();
+            }
+        }
+
+        function openAddScheduleModal() {
+            toast.info('Fitur akan segera tersedia');
+        }
+
+        function openAddMaterialModal() {
+            toast.info('Fitur akan segera tersedia');
+        }
+
+        function openAddTaskModal() {
+            toast.info('Fitur akan segera tersedia');
+        }
+
+        function openAddAnnouncementModal() {
+            toast.info('Fitur akan segera tersedia');
+        }
+
+        function openAddUserModal() {
+            toast.info('Fitur akan segera tersedia');
+        }
+
+        function editUser(id) {
+            toast.info('Fitur akan segera tersedia');
+        }
+
+        function deleteUser(id) {
+            if (!confirm('Apakah Anda yakin?')) return;
+            toast.info('Fitur akan segera tersedia');
+        }
+
+        function editSchedule(id) {
+            toast.info('Fitur akan segera tersedia');
+        }
+
+        function deleteSchedule(id) {
+            if (!confirm('Apakah Anda yakin?')) return;
+            toast.info('Fitur akan segera tersedia');
+        }
+
+        function editMaterial(id) {
+            toast.info('Fitur akan segera tersedia');
+        }
+
+        function deleteMaterial(id) {
+            if (!confirm('Apakah Anda yakin?')) return;
+            toast.info('Fitur akan segera tersedia');
+        }
+
+        function editTask(id) {
+            toast.info('Fitur akan segera tersedia');
+        }
+
+        function deleteTask(id) {
+            if (!confirm('Apakah Anda yakin?')) return;
+            toast.info('Fitur akan segera tersedia');
+        }
+
+        function editAnnouncement(id) {
+            toast.info('Fitur akan segera tersedia');
+        }
+
+        function deleteAnnouncement(id) {
+            if (!confirm('Apakah Anda yakin?')) return;
+            toast.info('Fitur akan segera tersedia');
+        }
+
+        async function logoutAdmin() {
+            try {
+                await auth.signOut();
+                sessionStorage.clear();
+                window.location.href = 'login.html';
+            } catch (error) {
+                toast.error('Gagal logout');
+            }
+        }
+    </script>
+</body>
+</html>
